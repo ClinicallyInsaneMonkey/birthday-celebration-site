@@ -52,6 +52,36 @@
           </div>
 
           <div class="panel-block">
+            <h2>Theme Controls</h2>
+            <div class="theme-grid">
+              <label>
+                <span>Primary Accent</span>
+                <input id="themeAccent1Input" type="color" value="#ff5fa7" />
+              </label>
+              <label>
+                <span>Secondary Accent</span>
+                <input id="themeAccent2Input" type="color" value="#8ed8ff" />
+              </label>
+              <label>
+                <span>Background 1</span>
+                <input id="themeBg1Input" type="color" value="#fff8fc" />
+              </label>
+              <label>
+                <span>Background 2</span>
+                <input id="themeBg2Input" type="color" value="#eef9ff" />
+              </label>
+              <label>
+                <span>Text Colour</span>
+                <input id="themeTextInput" type="color" value="#2d2b42" />
+              </label>
+              <label>
+                <span>Card Colour</span>
+                <input id="themeCardInput" type="color" value="#ffffff" />
+              </label>
+            </div>
+          </div>
+
+          <div class="panel-block">
             <div class="section-header">
               <h2>Clue Pages</h2>
               <button class="small-btn" id="addPageBtn">+ Add Page</button>
@@ -96,6 +126,16 @@
         <label>
           <span>Hidden Clue</span>
           <textarea class="page-clue-input" rows="3" placeholder="You were my favourite part of every day"></textarea>
+        </label>
+
+        <label>
+          <span>Music URL (optional)</span>
+          <input class="page-music-input" type="url" placeholder="https://example.com/song.mp3" />
+        </label>
+
+        <label>
+          <span>Photo URL (optional)</span>
+          <input class="page-photo-input" type="url" placeholder="https://example.com/your-photo.jpg" />
         </label>
 
         <label>

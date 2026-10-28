@@ -1,27 +1,43 @@
+const defaultTheme = {
+  accent1: "#ff5fa7",
+  accent2: "#8ed8ff",
+  bg1: "#fff8fc",
+  bg2: "#eef9ff",
+  text: "#2d2b42",
+  card: "#ffffff"
+};
+
 const defaultStory = {
   occasion: "Vidhi's Birthday",
   title: "For My Favourite Human",
   landingMessage:
     "A tiny love letter before the adventure begins... each page hides a clue, a memory, and a little piece of us. Are you ready to follow the trail of my heart?",
   cta: "Start the adventure",
+  theme: { ...defaultTheme },
   pages: [
     {
       title: "The First Clue",
       hint: "Think of the first time I saw you and how everything suddenly felt a little brighter.",
       clue: "You are the calm to my chaos and the sparkle in my ordinary days.",
-      answer: "You make my world feel softer and more beautiful."
+      answer: "You make my world feel softer and more beautiful.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"
     },
     {
       title: "Our Favourite Memory",
       hint: "Where do I always want to be when the world feels loud?",
       clue: "It is not the place, it is the person who makes even silence feel magical.",
-      answer: "With you. Always."
+      answer: "With you. Always.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80"
     },
     {
       title: "The Biggest Truth",
-      hint: "What is the one constant in all my hearts’ little adventures?",
+      hint: "What is the one constant in all my hearts' little adventures?",
       clue: "No matter where life takes me, you are the one thing I always want to choose again.",
-      answer: "You are my forever favourite person."
+      answer: "You are my forever favourite person.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80"
     }
   ]
 };
@@ -49,7 +65,25 @@ function decodeStoryFromHash() {
 let currentIndex = 0;
 let story = decodeStoryFromHash();
 
+function normalizeAnswer(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
+
+function applyThemeToElement(element) {
+  const theme = story.theme || defaultTheme;
+  element.style.setProperty("--page-accent-1", theme.accent1 || defaultTheme.accent1);
+  element.style.setProperty("--page-accent-2", theme.accent2 || defaultTheme.accent2);
+  element.style.setProperty("--page-bg-1", theme.bg1 || defaultTheme.bg1);
+  element.style.setProperty("--page-bg-2", theme.bg2 || defaultTheme.bg2);
+  element.style.setProperty("--page-text", theme.text || defaultTheme.text);
+  element.style.setProperty("--page-card", theme.card || defaultTheme.card);
+}
+
 function renderLanding() {
+  applyThemeToElement(viewerRoot);
   viewerRoot.innerHTML = `
     <div class="story-shell">
       <div class="story-landing">
@@ -71,6 +105,18 @@ function renderCluePage() {
     return;
   }
 
+  const musicMarkup = page.musicUrl
+    ? `<div class="music-player">
+         <div class="music-chip">🎵 page soundtrack</div>
+         <audio controls autoplay loop src="${page.musicUrl}"></audio>
+       </div>`
+    : "";
+
+  const photoMarkup = page.photoUrl
+    ? `<img class="story-photo" src="${page.photoUrl}" alt="${page.title || "Memory"}" />`
+    : "";
+
+  applyThemeToElement(viewerRoot);
   viewerRoot.innerHTML = `
     <div class="story-shell">
       <div class="story-page">
@@ -81,11 +127,18 @@ function renderCluePage() {
         <div class="story-card" id="clueCard">
           <h2>${page.title || "New Clue"}</h2>
           <p>${page.clue || ""}</p>
+          ${photoMarkup}
+          ${musicMarkup}
+          <div class="answer-box">
+            <label for="answerInput">Your answer</label>
+            <input id="answerInput" type="text" placeholder="Type your guess here..." />
+            <div class="answer-status" id="answerStatus"></div>
+          </div>
           <div class="reveal-box">${page.answer || "Reveal the answer here."}</div>
         </div>
         <div class="story-actions">
           <button class="ghost-btn" id="backBtn">${currentIndex === 0 ? "Home" : "Back"}</button>
-          <button class="primary-btn-small" id="revealBtn">${currentIndex === story.pages.length - 1 ? "Reveal" : "Reveal"}</button>
+          <button class="primary-btn-small" id="revealBtn">Check answer</button>
         </div>
       </div>
     </div>
@@ -94,18 +147,30 @@ function renderCluePage() {
   const clueCard = document.getElementById("clueCard");
   const revealBtn = document.getElementById("revealBtn");
   const backBtn = document.getElementById("backBtn");
+  const answerInput = document.getElementById("answerInput");
+  const answerStatus = document.getElementById("answerStatus");
 
   revealBtn.addEventListener("click", () => {
-    clueCard.classList.add("revealed");
-    revealBtn.textContent = currentIndex === story.pages.length - 1 ? "Finish" : "Next Clue";
-    revealBtn.onclick = () => {
-      currentIndex += 1;
-      if (currentIndex >= story.pages.length) {
-        renderFinalPage();
-      } else {
-        renderCluePage();
-      }
-    };
+    const userGuess = normalizeAnswer(answerInput.value);
+    const correctGuess = normalizeAnswer(page.answer);
+
+    if (userGuess === correctGuess) {
+      clueCard.classList.add("revealed");
+      answerStatus.textContent = "Correct! ✨";
+      answerStatus.classList.add("success");
+      revealBtn.textContent = currentIndex === story.pages.length - 1 ? "Finish" : "Next Clue";
+      revealBtn.onclick = () => {
+        currentIndex += 1;
+        if (currentIndex >= story.pages.length) {
+          renderFinalPage();
+        } else {
+          renderCluePage();
+        }
+      };
+    } else {
+      answerStatus.textContent = "Not quite — try again 💭";
+      answerStatus.classList.remove("success");
+    }
   });
 
   backBtn.addEventListener("click", () => {
@@ -119,6 +184,7 @@ function renderCluePage() {
 }
 
 function renderFinalPage() {
+  applyThemeToElement(viewerRoot);
   viewerRoot.innerHTML = `
     <div class="story-shell">
       <div class="final-message">

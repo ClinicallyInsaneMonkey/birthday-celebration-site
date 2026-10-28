@@ -1,27 +1,43 @@
+const defaultTheme = {
+  accent1: "#ff5fa7",
+  accent2: "#8ed8ff",
+  bg1: "#fff8fc",
+  bg2: "#eef9ff",
+  text: "#2d2b42",
+  card: "#ffffff"
+};
+
 const defaultStory = {
   occasion: "Vidhi's Birthday",
   title: "For My Favourite Human",
   landingMessage:
     "A tiny love letter before the adventure begins... each page hides a clue, a memory, and a little piece of us. Are you ready to follow the trail of my heart?",
   cta: "Start the adventure",
+  theme: { ...defaultTheme },
   pages: [
     {
       title: "The First Clue",
       hint: "Think of the first time I saw you and how everything suddenly felt a little brighter.",
       clue: "You are the calm to my chaos and the sparkle in my ordinary days.",
-      answer: "You make my world feel softer and more beautiful."
+      answer: "You make my world feel softer and more beautiful.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"
     },
     {
       title: "Our Favourite Memory",
       hint: "Where do I always want to be when the world feels loud?",
       clue: "It is not the place, it is the person who makes even silence feel magical.",
-      answer: "With you. Always."
+      answer: "With you. Always.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80"
     },
     {
       title: "The Biggest Truth",
-      hint: "What is the one constant in all my hearts’ little adventures?",
+      hint: "What is the one constant in all my hearts' little adventures?",
       clue: "No matter where life takes me, you are the one thing I always want to choose again.",
-      answer: "You are my forever favourite person."
+      answer: "You are my forever favourite person.",
+      musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      photoUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80"
     }
   ]
 };
@@ -35,6 +51,12 @@ const refs = {
   titleInput: document.getElementById("titleInput"),
   landingMessageInput: document.getElementById("landingMessageInput"),
   ctaInput: document.getElementById("ctaInput"),
+  themeAccent1Input: document.getElementById("themeAccent1Input"),
+  themeAccent2Input: document.getElementById("themeAccent2Input"),
+  themeBg1Input: document.getElementById("themeBg1Input"),
+  themeBg2Input: document.getElementById("themeBg2Input"),
+  themeTextInput: document.getElementById("themeTextInput"),
+  themeCardInput: document.getElementById("themeCardInput"),
   pagesContainer: document.getElementById("pagesContainer"),
   livePreview: document.getElementById("livePreview"),
   addPageBtn: document.getElementById("addPageBtn"),
@@ -56,11 +78,32 @@ function saveStoryToStorage() {
   localStorage.setItem("loveQuestStory", JSON.stringify(state.story));
 }
 
+function syncColorInputsFromTheme() {
+  const theme = state.story.theme || defaultTheme;
+  refs.themeAccent1Input.value = theme.accent1 || defaultTheme.accent1;
+  refs.themeAccent2Input.value = theme.accent2 || defaultTheme.accent2;
+  refs.themeBg1Input.value = theme.bg1 || defaultTheme.bg1;
+  refs.themeBg2Input.value = theme.bg2 || defaultTheme.bg2;
+  refs.themeTextInput.value = theme.text || defaultTheme.text;
+  refs.themeCardInput.value = theme.card || defaultTheme.card;
+}
+
+function applyThemeToElement(element) {
+  const theme = state.story.theme || defaultTheme;
+  element.style.setProperty("--page-accent-1", theme.accent1 || defaultTheme.accent1);
+  element.style.setProperty("--page-accent-2", theme.accent2 || defaultTheme.accent2);
+  element.style.setProperty("--page-bg-1", theme.bg1 || defaultTheme.bg1);
+  element.style.setProperty("--page-bg-2", theme.bg2 || defaultTheme.bg2);
+  element.style.setProperty("--page-text", theme.text || defaultTheme.text);
+  element.style.setProperty("--page-card", theme.card || defaultTheme.card);
+}
+
 function syncInputsFromStory() {
   refs.occasionInput.value = state.story.occasion || "";
   refs.titleInput.value = state.story.title || "";
   refs.landingMessageInput.value = state.story.landingMessage || "";
   refs.ctaInput.value = state.story.cta || "";
+  syncColorInputsFromTheme();
   renderPages();
   renderPreview();
 }
@@ -70,7 +113,9 @@ function getNewPage() {
     title: "New Clue",
     hint: "A secret only your heart can decode.",
     clue: "This is where your hidden message goes.",
-    answer: "Reveal the answer here."
+    answer: "Reveal the answer here.",
+    musicUrl: "",
+    photoUrl: ""
   };
 }
 
@@ -85,12 +130,16 @@ function renderPages() {
     const titleInput = clone.querySelector(".page-title-input");
     const hintInput = clone.querySelector(".page-hint-input");
     const clueInput = clone.querySelector(".page-clue-input");
+    const musicInput = clone.querySelector(".page-music-input");
+    const photoInput = clone.querySelector(".page-photo-input");
     const answerInput = clone.querySelector(".page-answer-input");
 
     pageNumber.textContent = `Page ${index + 1}`;
     titleInput.value = page.title || "";
     hintInput.value = page.hint || "";
     clueInput.value = page.clue || "";
+    musicInput.value = page.musicUrl || "";
+    photoInput.value = page.photoUrl || "";
     answerInput.value = page.answer || "";
 
     card.dataset.index = String(index);
@@ -109,6 +158,18 @@ function renderPages() {
 
     clueInput.addEventListener("input", () => {
       state.story.pages[index].clue = clueInput.value;
+      renderPreview();
+      saveStoryToStorage();
+    });
+
+    musicInput.addEventListener("input", () => {
+      state.story.pages[index].musicUrl = musicInput.value.trim();
+      renderPreview();
+      saveStoryToStorage();
+    });
+
+    photoInput.addEventListener("input", () => {
+      state.story.pages[index].photoUrl = photoInput.value.trim();
       renderPreview();
       saveStoryToStorage();
     });
@@ -149,11 +210,11 @@ function renderPages() {
 
 function renderPreview() {
   refs.livePreview.innerHTML = "";
+  applyThemeToElement(refs.livePreview);
 
   const shell = document.createElement("div");
   shell.className = "story-shell";
 
-  const firstPage = state.story.pages[0];
   const pageCount = state.story.pages.length;
 
   const landing = document.createElement("div");
@@ -170,6 +231,8 @@ function renderPreview() {
   state.story.pages.forEach((page, index) => {
     const storyPage = document.createElement("div");
     storyPage.className = "story-page";
+    const musicBadge = page.musicUrl ? `<div class="music-badge">🎵 music assigned</div>` : "";
+    const photoMarkup = page.photoUrl ? `<img class="story-photo" src="${page.photoUrl}" alt="${page.title || "Memory"}" />` : "";
     storyPage.innerHTML = `
       <div class="topline">
         <span class="page-tag">Clue ${index + 1}</span>
@@ -178,6 +241,8 @@ function renderPreview() {
       <div class="story-card">
         <h2>${page.title || "New Clue"}</h2>
         <p>${page.hint || "A secret only your heart can decode."}</p>
+        ${photoMarkup}
+        ${musicBadge}
         <div class="reveal-box">${page.answer || "The reveal goes here."}</div>
       </div>
       <div class="story-actions">
@@ -204,6 +269,13 @@ function updateStoryFromForm() {
   state.story.title = refs.titleInput.value.trim() || defaultStory.title;
   state.story.landingMessage = refs.landingMessageInput.value.trim() || defaultStory.landingMessage;
   state.story.cta = refs.ctaInput.value.trim() || defaultStory.cta;
+  state.story.theme = state.story.theme || { ...defaultTheme };
+  state.story.theme.accent1 = refs.themeAccent1Input.value;
+  state.story.theme.accent2 = refs.themeAccent2Input.value;
+  state.story.theme.bg1 = refs.themeBg1Input.value;
+  state.story.theme.bg2 = refs.themeBg2Input.value;
+  state.story.theme.text = refs.themeTextInput.value;
+  state.story.theme.card = refs.themeCardInput.value;
   saveStoryToStorage();
   renderPreview();
 }
@@ -240,6 +312,12 @@ refs.occasionInput.addEventListener("input", updateStoryFromForm);
 refs.titleInput.addEventListener("input", updateStoryFromForm);
 refs.landingMessageInput.addEventListener("input", updateStoryFromForm);
 refs.ctaInput.addEventListener("input", updateStoryFromForm);
+refs.themeAccent1Input.addEventListener("input", updateStoryFromForm);
+refs.themeAccent2Input.addEventListener("input", updateStoryFromForm);
+refs.themeBg1Input.addEventListener("input", updateStoryFromForm);
+refs.themeBg2Input.addEventListener("input", updateStoryFromForm);
+refs.themeTextInput.addEventListener("input", updateStoryFromForm);
+refs.themeCardInput.addEventListener("input", updateStoryFromForm);
 refs.addPageBtn.addEventListener("click", () => {
   state.story.pages.push(getNewPage());
   saveStoryToStorage();
