@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Love Quest Creator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">❤</div>
+          <div>
+            <p class="eyebrow">Creator Studio</p>
+            <h1>Love Quest Builder</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="secondary-btn" id="resetDataBtn">Reset Demo</button>
+          <button class="primary-btn" id="publishBtn">Generate Share Link</button>
+        </div>
+      </header>
+
+      <main class="creator-layout">
+        <section class="creator-panel">
+          <div class="panel-block">
+            <h2>Story Details</h2>
+            <div class="field-grid">
+              <label>
+                <span>Occasion</span>
+                <input id="occasionInput" type="text" placeholder="Vidhi's Birthday" />
+              </label>
+              <label>
+                <span>Title</span>
+                <input id="titleInput" type="text" placeholder="For My Favourite Human" />
+              </label>
+            </div>
+
+            <label>
+              <span>Landing Message</span>
+              <textarea id="landingMessageInput" rows="4" placeholder="A tiny love letter before the adventure begins..."></textarea>
+            </label>
+
+            <label>
+              <span>Start CTA</span>
+              <input id="ctaInput" type="text" placeholder="Start the adventure" />
+            </label>
+          </div>
+
+          <div class="panel-block">
+            <div class="section-header">
+              <h2>Clue Pages</h2>
+              <button class="small-btn" id="addPageBtn">+ Add Page</button>
+            </div>
+            <div id="pagesContainer" class="pages-container"></div>
+          </div>
+        </section>
+
+        <aside class="preview-panel">
+          <div class="preview-card">
+            <div class="preview-toolbar">
+              <span>Live Preview</span>
+              <button class="transparent-btn" id="openViewerBtn">Open viewer page</button>
+            </div>
+            <div id="livePreview" class="live-preview"></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <template id="pageTemplate">
+      <article class="page-card">
+        <div class="page-card-header">
+          <span class="page-number">Page</span>
+          <div class="page-actions">
+            <button class="move-up-btn small-icon" title="Move up">↑</button>
+            <button class="move-down-btn small-icon" title="Move down">↓</button>
+            <button class="delete-page-btn small-icon danger" title="Delete">✕</button>
+          </div>
+        </div>
+
+        <label>
+          <span>Page Title</span>
+          <input class="page-title-input" type="text" placeholder="The First Clue" />
+        </label>
+
+        <label>
+          <span>Prompt / Hint</span>
+          <textarea class="page-hint-input" rows="3" placeholder="Think of the day we met"></textarea>
+        </label>
+
+        <label>
+          <span>Hidden Clue</span>
+          <textarea class="page-clue-input" rows="3" placeholder="You were my favourite part of every day"></textarea>
+        </label>
+
+        <label>
+          <span>Answer / Reveal</span>
+          <input class="page-answer-input" type="text" placeholder="The answer to this clue" />
+        </label>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
